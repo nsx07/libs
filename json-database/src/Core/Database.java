@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+/**
+ * Represents a generic database for storing and retrieving entities of a specified type.
+ * @param <T> The type of entities to be stored in the database.
+ */
 @SuppressWarnings("all")
 public class Database<T> {
 
@@ -26,27 +30,42 @@ public class Database<T> {
 
     private Database() {}
 
+    /**
+     * Gets the singleton instance of the Database.
+     * @param <T> The type of entities to be stored in the database.
+     * @return The Database instance.
+     */
     public static synchronized <T> Database getInstance() {
         if (instance == null) {
             instance = new Database<T>();
         } return instance;
     }
 
+    /**
+     * Configures the source file for the database.
+     * @param sourceFile The path to the JSON source file.
+     * @throws IOException If an I/O error occurs.
+     */    
     public static void configureSourceFile(String sourceFile) throws IOException {
         filePath = sourceFile;
         initialize();
     }
 
-    public static void setInstance(Database instance) {
-        Database.instance = instance;
-    }
-
+    /**
+     * Configures the entity type for the database.
+     * @param instance The class representing the entity type.
+     */
     public void configureType(Class<T> instance) {
         entityInstance = instance;
         var classFullName = entityInstance.getTypeName().split("\\.");
         this.tableName = classFullName[classFullName.length - 1].toLowerCase();
     }
 
+    /**
+     * Sets a list of entities in the database.
+     * @param array The list of entities to set.
+     * @throws NullIdException If an entity with a null ID is encountered.
+     */
     public void set(List<T> array) throws NullIdException {
         for (var each: array) {
             if (((EntityBase) each).getId() == null) {
@@ -57,6 +76,11 @@ public class Database<T> {
         writeJSON(array, false);
     }
 
+    /**
+     * Adds an entity to the database.
+     * @param entity The entity to add.
+     * @throws NullIdException If the entity has a null ID.
+     */
     public void set(T entity) throws NullIdException {
         boolean newTable = false;
         List<Map<String, Object>> json = readJSON();
@@ -78,6 +102,10 @@ public class Database<T> {
         writeJSON(entities, newTable);
     }
 
+    /**
+     * Retrieves entities from the database.
+     * @return A stream of entities.
+     */
     public Stream<T> get() {
         List<Map<String, Object>> json = readJSON();
 
@@ -136,6 +164,10 @@ public class Database<T> {
         }
     }
 
+    /**
+     * Initializes the database by checking and creating tables for entity types.
+     * @throws IOException If an I/O error occurs.
+     */
     private static void initialize() throws IOException {
 
         Database db = Database.getInstance();

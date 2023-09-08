@@ -7,7 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
+/**
+ * An abstract base class for implementing a generic repository for storing and retrieving entities.
+ * Concrete repository implementations should extend this class and provide specific data access logic.
+ *
+ * @param <TEntity> The type of entities stored in the repository.
+ * @soon <TKey>  Currently this projects only support UUID as Key, generic will be implemented soon.
+ * @param <TKey>    The type of the entity's primary key.
+ */
 @SuppressWarnings("all")
 public abstract class Repository<TEntity extends EntityBase> implements IRepository<TEntity, UUID> {
 
