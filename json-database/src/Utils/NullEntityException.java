@@ -1,5 +1,3 @@
-package Utils;
-
 public class NullEntityException extends Exception {
     
     @Override

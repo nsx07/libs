@@ -27,8 +27,8 @@
    To get started with the JSON Database, initialize it and configure the source file path.
 
    ```java
-   // Configure the source file path
-   Database.configureSourceFile("data.json");
+   // Initialize database, source file path and pojo package
+   Database.initialie("data.json", "Model");
 
    // Get the Database instance
    // Using Database directly its low-level and not very recommended

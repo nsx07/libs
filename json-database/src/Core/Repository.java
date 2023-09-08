@@ -1,5 +1,3 @@
-package Core;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -55,11 +53,7 @@ public abstract class Repository<TEntity extends EntityBase> implements IReposit
     public List<TEntity> getAll() {
         List<TEntity> entities = getDatabase().get().toList();
 
-        if (entities.size() >= 1) {
-            return new ArrayList<>(entities);
-        }
-
-        return null;
+        return new ArrayList<>(entities);
     }
 
     @Override

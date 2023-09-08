@@ -1,6 +1,3 @@
-package Core;
-
-import Utils.CoreUtils;
 import Utils.NullIdException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -46,9 +43,15 @@ public class Database<T> {
      * @param sourceFile The path to the JSON source file.
      * @throws IOException If an I/O error occurs.
      */    
-    public static void configureSourceFile(String sourceFile) throws IOException {
+    public static void initialize(String sourceFile, String pojoPackage) throws IOException {
         filePath = sourceFile;
-        initialize();
+
+        File testFile = new File(filePath);
+        if (!testFile.exists()) {
+            testFile.createNewFile();
+        }
+
+        initialize(pojoPackage);
     }
 
     /**
@@ -168,7 +171,7 @@ public class Database<T> {
      * Initializes the database by checking and creating tables for entity types.
      * @throws IOException If an I/O error occurs.
      */
-    private static void initialize() throws IOException {
+    private static void initialize(String pojoPackage) throws IOException {
 
         Database db = Database.getInstance();
         List<String> entitiesReady = new ArrayList<>();
@@ -177,12 +180,11 @@ public class Database<T> {
         
         if (json != null) {
             json.forEach(x -> entitiesReady.add(x.get("table").toString()));
-        }
+        } else json = new ArrayList<>();
 
-        ArrayList<Class<?>> classes;
-        classes = coreUtils.getClasses("Core");
         List<String> entities = new ArrayList<>();
-        
+        List<Class<?>> classes = coreUtils.getClasses(pojoPackage);
+
         classes.forEach(x -> {
             if (x.getSuperclass() != null && x.getSuperclass().getSimpleName().equals("EntityBase")) {
                 entities.add(x.getSimpleName());
@@ -195,18 +197,20 @@ public class Database<T> {
             }
         });
 
-        entitiesToAdd.forEach(x -> {
+        for (var entityToAdd: entitiesToAdd) {
             Map<String, Object> map = new HashMap<>();
-            map.put("table", x.toLowerCase());
+            map.put("table", entityToAdd.toLowerCase());
             map.put("data", new ArrayList<>());
             json.add(map);
-        });
+        }
 
-        Gson gson = new GsonBuilder().create();
-        try (Writer writer = new FileWriter(filePath)) {
-            gson.toJson(json, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (entitiesToAdd.size() > 0) {
+            Gson gson = new GsonBuilder().create();
+            try (Writer writer = new FileWriter(filePath)) {
+                gson.toJson(json, writer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

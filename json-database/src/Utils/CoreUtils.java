@@ -1,5 +1,3 @@
-package Utils;
-
 import java.net.URL;
 import java.util.*;
 import java.io.File;

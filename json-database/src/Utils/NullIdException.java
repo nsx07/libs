@@ -1,5 +1,3 @@
-package Utils;
-
 public class NullIdException extends Exception {
 
     @Override
